@@ -11,10 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('references', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+Schema::create('references', function (Blueprint $table) {
+    $table->id();
+    $table->foreignId('problem_id')->constrained()->onDelete('cascade');
+    $table->string('type'); // text, image, note
+    $table->string('title')->nullable();
+    $table->text('content')->nullable();
+    $table->timestamps();
+});
+
+
     }
 
     /**

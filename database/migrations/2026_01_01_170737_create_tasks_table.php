@@ -12,9 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('tasks', function (Blueprint $table) {
-            $table->id();
-            $table->timestamps();
-        });
+    $table->id();
+    $table->foreignId('problem_id')->constrained()->onDelete('cascade');
+    $table->string('title');
+    $table->boolean('done')->default(false);
+    $table->timestamps();
+});
+
     }
 
     /**

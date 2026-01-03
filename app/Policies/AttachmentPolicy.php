@@ -12,7 +12,7 @@ class AttachmentPolicy
 
     public function view(User $user, Attachment $attachment)
     {
-        return $user->id === $attachment->user_id;
+        return $user->isAdmin() || $user->id === $attachment->user_id;
     }
 
     public function create(User $user)
@@ -22,11 +22,11 @@ class AttachmentPolicy
 
     public function update(User $user, Attachment $attachment)
     {
-        return $user->id === $attachment->user_id;
+        return $user->isAdmin() || $user->id === $attachment->user_id;
     }
 
     public function delete(User $user, Attachment $attachment)
     {
-        return $user->id === $attachment->user_id;
+        return $user->isAdmin() || $user->id === $attachment->user_id;
     }
 }

@@ -7,55 +7,43 @@ use App\Models\User;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 
+use Tymon\JWTAuth\Facades\JWTAuth;
+use Tymon\JWTAuth\Exceptions\JWTException;
+
 class AuthController extends Controller
 {
-    // REGISTER
-   public function register(Request $request) {
-    $request->validate([
-        'name' => 'required|string|max:255',
-        'email' => 'required|string|email|unique:users',
-        'password' => 'required|string|min:6',
-    ]);
-//dd($request->all());
-    $user = User::create([
-        'name' => $request->name,
-        'email' => $request->email,
-        'password' => Hash::make($request->password),
-    ]);
-
-    return response()->json(['message' => 'User registered', 'user' => $user]);
-}
-
     public function login(Request $request)
     {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required|string',
-        ]);
+        $credentials = $request->only('email', 'password');
 
-        $user = User::where('email', $request->email)->first();
-
-        if (! $user || ! Hash::check($request->password, $user->password)) {
-            throw ValidationException::withMessages([
-                'email' => ['The provided credentials are incorrect.'],
-            ]);
+        try {
+            if (!$token = JWTAuth::attempt($credentials)) {
+                return response()->json(['message' => 'Invalid credentials'], 401);
+            }
+        } catch (JWTException $e) {
+            return response()->json(['message' => 'Could not create token'], 500);
         }
 
-        $token = $user->createToken('auth_token')->plainTextToken;
-
-        return response()->json([
-            'user' => $user,
-            'token' => $token,
-        ]);
+        return response()->json(['token' => $token]);
     }
 
-    // LOGOUT
-    public function logout(Request $request)
+    public function me()
     {
-        $request->user()->currentAccessToken()->delete();
+        return response()->json(auth()->user());
+    }
 
-        return response()->json([
-            'message' => 'Logged out successfully'
+    public function register(Request $request)
+    {
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => bcrypt($request->password),
+            'role' => 'user', // or as needed
         ]);
+
+        $token = JWTAuth::fromUser($user);
+
+        return response()->json(['token' => $token]);
     }
 }
+

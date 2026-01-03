@@ -35,12 +35,18 @@ return [
     |
     */
 
-    'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
+'guards' => [
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users',
     ],
+
+    'api' => [
+        'driver' => 'jwt', // <-- change from 'sanctum' to 'jwt'
+        'provider' => 'users',
+        'hash' => false,
+    ],
+],
 
     /*
     |--------------------------------------------------------------------------

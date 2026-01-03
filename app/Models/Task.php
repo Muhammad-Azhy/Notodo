@@ -1,23 +1,23 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-// IMPORT MODELS
-use App\Models\User;
-use App\Models\Problem;
 
 class Task extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'title',
+        'completed',
+        'problem_id',
+    ];
 
-    public function user() {
-        return $this->belongsTo(User::class);
-    }
+    protected $casts = [
+        'completed' => 'boolean',
+    ];
 
-    public function problem() {
+    public function problem()
+    {
         return $this->belongsTo(Problem::class);
     }
 }
-?>

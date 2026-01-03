@@ -12,7 +12,7 @@ class ProblemPolicy
 
     public function view(User $user, Problem $problem)
     {
-        return $user->id === $problem->user_id;
+        return $user->isAdmin() || $user->id === $problem->user_id;
     }
 
     public function create(User $user)
@@ -22,11 +22,11 @@ class ProblemPolicy
 
     public function update(User $user, Problem $problem)
     {
-        return $user->id === $problem->user_id;
+        return $user->isAdmin() || $user->id === $problem->user_id;
     }
 
     public function delete(User $user, Problem $problem)
     {
-        return $user->id === $problem->user_id;
+        return $user->isAdmin() || $user->id === $problem->user_id;
     }
 }

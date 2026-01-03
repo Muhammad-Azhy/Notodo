@@ -12,7 +12,7 @@ class TaskPolicy
 
     public function view(User $user, Task $task)
     {
-        return $user->id === $task->user_id;
+        return $user->isAdmin() || $user->id === $task->user_id;
     }
 
     public function create(User $user)
@@ -22,11 +22,11 @@ class TaskPolicy
 
     public function update(User $user, Task $task)
     {
-        return $user->id === $task->user_id;
+        return $user->isAdmin() || $user->id === $task->user_id;
     }
 
     public function delete(User $user, Task $task)
     {
-        return $user->id === $task->user_id;
+        return $user->isAdmin() || $user->id === $task->user_id;
     }
 }

@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Problem;
+use App\Models\User;
 
 class ProblemController extends Controller
 {
     public function index(Request $request)
     {
+        // dd($request->user()->problems()->get());
+        
         return response()->json($request->user()->problems()->get());
     }
 

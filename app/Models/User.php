@@ -2,32 +2,37 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
-use Illuminate\Notifications\Notifiable;
-use Laravel\Sanctum\HasApiTokens;
-use App\Models\Problem;
-use App\Models\Reference;
-use App\Models\Task;
-use App\Models\Attachment;
+use Tymon\JWTAuth\Contracts\JWTSubject;
 
-class User extends Authenticatable
+class User extends Authenticatable implements JWTSubject
 {
-    use HasApiTokens, HasFactory, Notifiable;
-
-   protected $fillable = ['user_id', 'title', 'type', 'content', 'problem_id','name', 'email', 'password'];
+    protected $fillable = [
+        'name',
+        'email',
+        'password',
+        'role',
+    ];
 
     protected $hidden = [
         'password',
-        'remember_token',
     ];
 
-    protected $casts = [
-        'email_verified_at' => 'datetime',
-        'password' => 'hashed',
-    ];
+    public function getJWTIdentifier()
+    {
+        return $this->getKey();
+    }
 
-    // RELATIONSHIPS 
+    public function getJWTCustomClaims()
+    {
+        return [];
+    }
+
+    public function isAdmin()
+    {
+        return $this->role === 'admin';
+    }
+
     public function problems()
     {
         return $this->hasMany(Problem::class);
@@ -35,17 +40,16 @@ class User extends Authenticatable
 
     public function references()
     {
-        return $this->hasMany(Reference::class);
+        return $this->hasManyThrough(Reference::class, Problem::class);
     }
 
     public function tasks()
     {
-        return $this->hasMany(Task::class);
+        return $this->hasManyThrough(Task::class, Problem::class);
     }
 
     public function attachments()
     {
-        return $this->hasMany(Attachment::class);
+        return $this->hasManyThrough(Attachment::class, Problem::class);
     }
 }
-?>

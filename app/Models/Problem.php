@@ -1,27 +1,34 @@
 <?php
+
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-
-use App\Models\User;
-use App\Models\Reference;
-use App\Models\Task;
 
 class Problem extends Model
 {
-    use HasFactory;
+    protected $fillable = [
+        'title',
+        'description',
+        'user_id',
+    ];
 
-    public function user() {
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function references() {
+    public function references()
+    {
         return $this->hasMany(Reference::class);
     }
 
-    public function tasks() {
+    public function tasks()
+    {
         return $this->hasMany(Task::class);
     }
+
+    public function attachments()
+    {
+        return $this->hasMany(Attachment::class);
+    }
 }
-?>
