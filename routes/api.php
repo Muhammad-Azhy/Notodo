@@ -9,11 +9,6 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\AttachmentController;
 use App\Http\Middleware\AdminMiddleware;
 
-/*
-|--------------------------------------------------------------------------
-| Public Auth Routes
-|--------------------------------------------------------------------------
-*/
 
 Route::post('/register', [AuthController::class, 'register']);
 Route::post('/login', [AuthController::class, 'login']);
@@ -36,11 +31,17 @@ Route::middleware('auth:api')->group(function () {
     Route::get('/problems/{id}', [ProblemController::class, 'show']);
     Route::put('/problems/{id}', [ProblemController::class, 'update']);
     Route::delete('/problems/{id}', [ProblemController::class, 'destroy']);
+    Route::get('/problems/{problem}/tasks', [TaskController::class, 'tasksByProblem']);
+    Route::get('/problems/{problem}/references', [ReferenceController::class, 'referencesByProblem']);
 
-  
+    Route::get('/user', [UserController::class, 'profile']);
+    Route::put('/user', [UserController::class, 'updateProfile']);
+    Route::delete('/user', [UserController::class, 'deleteAccount']);
+    
     Route::apiResource('references', ReferenceController::class);
-    Route::apiResource('tasks', TaskController::class);
 
+    Route::apiResource('tasks', TaskController::class);
+    
   
     Route::apiResource('attachments', AttachmentController::class);
 });

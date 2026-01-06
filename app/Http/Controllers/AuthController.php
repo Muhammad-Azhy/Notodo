@@ -2,16 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Validation\ValidationException;
-
-use Tymon\JWTAuth\Facades\JWTAuth;
 use Tymon\JWTAuth\Exceptions\JWTException;
+use Tymon\JWTAuth\Facades\JWTAuth;
 
 class AuthController extends Controller
 {
+
     public function login(Request $request)
     {
         $credentials = $request->only('email', 'password');
@@ -26,24 +25,29 @@ class AuthController extends Controller
 
         return response()->json(['token' => $token]);
     }
+    public function register(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string',
+            'email' => 'required|email|unique:users',
+            'password' => 'required|string|min:6',
+        ]);
+        
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role' => 'user',
+        ]);
+
+        $token = JWTAuth::fromUser($user);
+
+        return response()->json(['token' => $token, 'user' => $user]);
+    }
+
 
     public function me()
     {
         return response()->json(auth()->user());
     }
-
-    public function register(Request $request)
-    {
-        $user = User::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => bcrypt($request->password),
-            'role' => 'user', // or as needed
-        ]);
-
-        $token = JWTAuth::fromUser($user);
-
-        return response()->json(['token' => $token]);
-    }
 }
-

@@ -23,10 +23,7 @@ class User extends Authenticatable implements JWTSubject
         return $this->getKey();
     }
 
-    public function getJWTCustomClaims()
-    {
-        return [];
-    }
+   
 
     public function isAdmin()
     {
@@ -51,5 +48,9 @@ class User extends Authenticatable implements JWTSubject
     public function attachments()
     {
         return $this->hasManyThrough(Attachment::class, Problem::class);
+    }
+     public function getJWTCustomClaims()
+    {
+        return [];
     }
 }

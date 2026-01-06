@@ -10,6 +10,7 @@ class Task extends Model
         'title',
         'completed',
         'problem_id',
+        'user_id',
     ];
 
     protected $casts = [

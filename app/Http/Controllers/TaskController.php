@@ -2,54 +2,63 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\Task;
+use Illuminate\Http\Request;
 
 class TaskController extends Controller
 {
     public function index(Request $request)
     {
+
         return response()->json($request->user()->tasks()->get());
     }
+    public function tasksByProblem($problemId)
+{
+    $tasks = Task::where('problem_id', $problemId)->get();
+    return response()->json($tasks);
+}
+
 
     public function store(Request $request)
     {
         $request->validate([
-            'title' => 'required|string|max:150',
-            'description' => 'nullable|string',
+            'title' => 'required|string',
+            'done' => 'nullable|boolean',
             'problem_id' => 'nullable|exists:problems,id',
-            'is_completed' => 'nullable|boolean'
+        ]);
+        $task = Task::create([
+            'user_id' => $request->user()->id,
+            'title' => $request->title,
+            'done' => $request->done ?? false,
+            'problem_id' => $request->problem_id??null,
         ]);
 
-        $task = $request->user()->tasks()->create($request->only('title','description','problem_id','is_completed'));
         return response()->json($task, 201);
     }
 
-    public function show(Request $request, $id)
+    public function show($id)
     {
-        $task = $request->user()->tasks()->findOrFail($id);
-        return response()->json($task);
+        return Task::findOrFail($id);
     }
 
     public function update(Request $request, $id)
     {
-        $task = $request->user()->tasks()->findOrFail($id);
+        $task = Task::findOrFail($id);
 
-        $request->validate([
-            'title' => 'sometimes|required|string|max:150',
-            'description' => 'nullable|string',
-            'problem_id' => 'nullable|exists:problems,id',
-            'is_completed' => 'nullable|boolean'
-        ]);
+        if ($request->has('title')) $task->title = $request->title;
+        if ($request->has('done')) $task->done = $request->done;
+        if ($request->has('problem_id')) $task->problem_id = $request->problem_id;
 
-        $task->update($request->only('title','description','problem_id','is_completed'));
+        $task->save();
+
         return response()->json($task);
     }
 
-    public function destroy(Request $request, $id)
+    public function destroy($id)
     {
-        $task = $request->user()->tasks()->findOrFail($id);
+        $task = Task::findOrFail($id);
         $task->delete();
+
         return response()->json(['message' => 'Task deleted']);
     }
 }

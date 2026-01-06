@@ -12,7 +12,7 @@ class ProblemController extends Controller
     {
         // dd($request->user()->problems()->get());
         
-        return response()->json($request->user()->problems()->get());
+        return response()->json($request->user()->problems()->with('references','tasks')->get());
     }
 
     public function store(Request $request)
